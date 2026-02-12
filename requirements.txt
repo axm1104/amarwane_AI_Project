@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+numpy
+faiss-cpu
+pypdf
+langchain
+langchain-community
+langchain-google-vertexai
+langchain-google-genai
+google-cloud-aiplatform>=1.38.0
+google-genai
+google-adk>=0.1.0
+langchain-google-vertexai>=0.0.5
+tavily-python>=0.3.0
+langchain-text-splitters

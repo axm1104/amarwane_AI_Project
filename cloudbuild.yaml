@@ -1,0 +1,52 @@
+# Google Cloud Build configuration
+# Builds Docker image in the cloud and deploys to Cloud Run
+
+substitutions:
+  _SERVICE_NAME: system-support-engineer-chatbot
+  _GCP_REGION: us-central1
+  _IMAGE_NAME: system-support-engineer-chatbot-agent
+
+steps:
+  # Step 1: Build Docker image using Cloud Build
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/${_IMAGE_NAME}:latest'
+      - '.'
+    dir: '.'
+
+  # Step 2: Push image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/${_IMAGE_NAME}:latest'
+
+  # Step 3: Deploy to Cloud Run
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - '${_SERVICE_NAME}'
+      - '--image=gcr.io/$PROJECT_ID/${_IMAGE_NAME}:latest'
+      - '--platform=managed'
+      - '--region=${_GCP_REGION}'
+      - '--allow-unauthenticated'
+      - '--memory=4Gi'
+      - '--cpu=4'
+      - '--timeout=3600'
+      - '--min-instances=1'
+      - '--no-cpu-throttling'
+      - '--set-env-vars=GOOGLE_GENAI_USE_VERTEXAI=TRUE,GOOGLE_CLOUD_PROJECT=$PROJECT_ID,GOOGLE_CLOUD_LOCATION=${_GCP_REGION},PYTHONUNBUFFERED=1'
+
+# Image to be pushed to Container Registry
+images:
+  - 'gcr.io/$PROJECT_ID/${_IMAGE_NAME}:latest'
+
+# Options
+options:
+  machineType: 'N1_HIGHCPU_8'
+  logging: CLOUD_LOGGING_ONLY
+
+# Timeout for build
+timeout: '3600s'

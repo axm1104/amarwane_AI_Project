@@ -1,0 +1,29 @@
+# Dockerfile.streamlit
+
+# Use Python 3.11 slim image
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Streamlit and dependencies
+RUN pip install --no-cache-dir streamlit requests
+
+# Copy application code
+COPY streamlit_ui.py .
+
+# Expose port 8080 for Cloud Run
+EXPOSE 8080
+
+# Configure Streamlit to run on port 8080
+ENV STREAMLIT_SERVER_PORT=8080
+ENV STREAMLIT_SERVER_ADDRESS=0.0.0.0
+ENV STREAMLIT_SERVER_HEADLESS=true
+
+# Run the Streamlit application
+CMD ["streamlit", "run", "streamlit_ui.py"]

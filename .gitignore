@@ -1,0 +1,7 @@
+tranquil-well-478523-b3-8c0fee1723fc.json
+__pycache__/
+*.pyc
+.venv/
+documents3.json
+.env
+*.pdf
